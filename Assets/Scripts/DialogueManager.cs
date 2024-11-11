@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+
 public class DialogueManager : MonoBehaviour
 {
+    
     public TMP_Text nameField;
     public TMP_Text dialogueField;
     private Queue<string> sentences;
@@ -16,12 +18,31 @@ public class DialogueManager : MonoBehaviour
     }
     public void StartDialogue(Dialogue dialogue)
     {
-        Debug.Log("im talking to " + dialogue.name);
+        nameField.text = dialogue.name;
         
         sentences.Clear();
         foreach (string sentence in dialogue.sentences)
         {
             sentences.Enqueue(sentence);
         }
+        DisplayNextSentence();
     }
+
+    public void DisplayNextSentence()
+    {
+        if (sentences.Count == 0)
+        {
+            EndDialogue();
+            return;
+        }
+        string sentence = sentences.Dequeue();
+        dialogueField.text = sentence;
+    }
+
+    private void EndDialogue()
+    {
+        Debug.Log("End conversation");
+    }
+    
+    
 }
