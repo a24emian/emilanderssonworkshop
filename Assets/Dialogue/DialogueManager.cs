@@ -11,13 +11,16 @@ public class DialogueManager : MonoBehaviour
     public TMP_Text nameField;
     public TMP_Text dialogueField;
     private Queue<string> sentences;
+    public Animator anim;
 
     private void Start()
     {
         sentences = new Queue<string>();
+        
     }
     public void StartDialogue(Dialogue dialogue)
     {
+        anim.SetBool("isOpen", true);
         nameField.text = dialogue.name;
         
         sentences.Clear();
@@ -36,11 +39,25 @@ public class DialogueManager : MonoBehaviour
             return;
         }
         string sentence = sentences.Dequeue();
-        dialogueField.text = sentence;
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(sentence));
+    }
+
+    private IEnumerator TypeSentence(string sentence)
+    {
+        dialogueField.text = "";
+        foreach (char letter in sentence.ToCharArray())
+        {
+            dialogueField.text += letter;
+            yield return new WaitForSeconds(0.05f);
+        }
+
     }
 
     private void EndDialogue()
     {
+        StopAllCoroutines();
+        anim.SetBool("isOpen", false);
         Debug.Log("End conversation");
     }
     
