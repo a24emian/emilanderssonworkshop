@@ -25,6 +25,7 @@ public class PlatformerMovement : MonoBehaviour
     
     private Vector2 moveInput;
     private Rigidbody2D rb;
+    private Animator anim;
     
     // Platformer specific variables
     private CircleCollider2D groundCheckCollider;
@@ -40,7 +41,7 @@ public class PlatformerMovement : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        
+        anim = GetComponent<Animator>();
         groundCheckCollider = GetComponent<CircleCollider2D>();
         groundCheckCollider.isTrigger = true;
         
@@ -154,12 +155,41 @@ public class PlatformerMovement : MonoBehaviour
     {
         if (controlEnabled)
         {
+            // Get the movement input
             moveInput = context.ReadValue<Vector2>().normalized;
+
+            // Check if there is any movement input
+            if (moveInput != Vector2.zero)
+            {
+                // Set the animator to the walking state
+                anim.SetBool("Run", true);
+
+                // Flip the player based on movement direction (left or right)
+                if (moveInput.x < 0)
+                {
+                    // Facing left
+                    transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                }
+                else if (moveInput.x > 0)
+                {
+                    // Facing right
+                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                }
+            }
+            else
+            {
+                // No movement, so set the animator to the idle state
+                anim.SetBool("Run", false);
+            }
         }
         else
         {
+            // Movement control is disabled, so stop any movement
             moveInput = Vector2.zero;
+            anim.SetBool("Run", false);  // Ensure player is idle when control is disabled
         }
+       
+       
     }
 
     // Handle Jump-input
